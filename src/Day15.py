@@ -77,10 +77,10 @@ class Grid:
         while len(self.units['E']) * len(self.units['G']):
             nb_turns += self.turn_routine()
             if no_elves_loss and len(self.units['E']) < starting_elves:
-                print("At least one elf died. End of game")
+                print("-- At least one elf died. End of game")
                 return -1
-            print(f'End of turn {nb_turns}')
-        return nb_turns * (sum(unit.hit_points for unit in self.units['E'].values()) + sum(unit.hit_points for unit in self.units['G'].values()))
+            print(f'- End of turn {nb_turns}')
+        return nb_turns * (sum(unit.hit_points for unit_type in self.units for unit in self.units[unit_type].values()))
 
     def identify_open_squares(self, targets):
         open_squares = []
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         puzzle = f.read().split('\n')
 
     puzzle = np.array(list(map(list, puzzle)))
-    print(f"The result of first star is {Grid(puzzle[:, :]).combat()}")
+    print(f"The result of first star is {Grid(np.array(puzzle)).combat()}")
 
     elves_attack_power = 4
     while True:

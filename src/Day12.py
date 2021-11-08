@@ -1,43 +1,22 @@
 import pathlib
 
+
+def run(pots, patterns_dict, n):
+    for _ in range(n):
+        pots = '..' + pots + '..'
+        plants = ''
+        for idx, p in enumerate(pots):
+            patt = '.' * max(0, 2-idx) + pots[max(0, idx-2): min(len(pots), idx+3)] + '.' * max(0, idx + 3 - len(pots))
+            plants += patterns_dict[patt]
+        pots = plants
+    return sum(idx - 2 * n for idx, p in enumerate(pots) if p == '#')
+
+
 if __name__ == '__main__':
     with open(f'../inputs/{pathlib.Path(__file__).stem}.txt', 'r') as f:
-        puzzle_input = f.read()
+        current, patterns = f.read().split('\n\n')
 
-    first_line = puzzle_input.split('\n')[0]
-    current = first_line[first_line.index(': ')+2:]
+    current = current[current.index(': ')+2:]
+    patterns = {seq: new for seq, new in [line.split(' => ') for line in patterns.split('\n')]}
 
-    transform = {seq: new for seq, new in [line.split(' => ') for line in puzzle_input.split('\n')[2:]]}
-
-    for step in range(20):
-        temp = '.....' + str(current) + '.....'
-        for i in range(2, 5):
-            pattern = '.'*(7-i)+current[:i-2]
-            assert(len(pattern) == 5)
-            temp = temp[:i] + transform[pattern] + temp[i+1:]
-
-        for i in range(len(current)):
-            if i == 0:
-                pattern = '..' + current[:3]
-            elif i == 1:
-                pattern = '.' + current[:4]
-            elif i == len(current)-2:
-                pattern = current[-4:] + '.'
-            elif i == len(current)-1:
-                pattern = current[-3:] + '..'
-            else:
-                pattern = current[i-2:i+3]
-
-            assert(len(pattern) == 5)
-            temp = temp[:i+5] + transform[pattern] + temp[i+6:]
-
-        for i in range(3):
-            pattern = current[-(2-i):] + '.'*(3+i)
-            if i == 2:
-                pattern = '.....'
-            assert(len(pattern) == 5)
-            temp = temp[:-(5-i)] + transform[pattern] + temp[-(5-i)+1:]
-
-        current = str(temp)
-
-    print(f"The result of first star is {sum(i-20*5 for i in range(len(current)) if current[i] == '#')}")
+    print(f"The result of first star is {run(current, patterns, 20)}")
